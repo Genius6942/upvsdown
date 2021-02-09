@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         UpVSDown
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.5
 // @description  try to take over the world!
 // @author       Adventure10
 // @match        https://artofproblemsolving.com/upvsdown
@@ -18,7 +18,7 @@
     }
 
     function build_game(game) {
-        document.getElementById('main-content').innerHTML = `<div id='main-contentr' style="position: relative;">
+        document.getElementById('main-content').innerHTML = ` <div id='main-contentr'>
         <div class="containter">
             <div id='number'>
                 500
@@ -79,13 +79,14 @@
                 This is up vs down, a popular game where the players try to move the number up or down.<br><br>Either team wins when they reach 1000 or 0.
             </div>
         </div><br><br><br><br><br>
-        <div id='instruction-container'>
+        <span id='instruction-container'>
             <span style="font-size:30px;cursor:pointer">
                 &#128712;info
             </span>
-        </div>
+        </span>
     </div>`
-        document.getElementsByTagName('head')[0].innerHTML += `<style>.log,
+        document.getElementsByTagName('head')[0].innerHTML += `<style>
+        .log,
         #up-wins,
         #down-wins,
         #number,
@@ -100,6 +101,7 @@
             cursor: pointer;
             text-align: left;
             padding-left: 20px;
+            float: left;
         }
         
         div {
@@ -275,8 +277,8 @@
     let number = 500
     var id;
     let username;
-    var url = 'http://localhost:8080/'
-    let timeb4 = new Date().getTime()
+    var url = 'http://127.0.0.1:5000/'
+    timeb4 = new Date().getTime()
     console.log(timeb4)
     id = checkCookie()
     if (id == false) {
@@ -293,24 +295,34 @@
         if (typeof(id) == "string") {
             id = parseInt(id)
         }
-    }
-    /*
-        window.addEventListener('unload', function(e) {
-            fetch(url + 'leave', {
+        fetch(url + 'is_id', {
                 method: 'POST',
                 body: JSON.stringify({
                     id: id
                 })
             })
-            e.preventDefault()
-            e.returnValue = ''
-        })*/
+            .then(response => response.json())
+            .then(result => check_id(result))
+    }
+
+    function check_id(data) {
+        if (data.id = 'false') {
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            window.location.reload()
+        }
+    }
 
     function make_id(stuff) {
         console.log(new Date().getTime() - timeb4)
         id = stuff.id
         console.log(id)
         setCookie('id', id, 3000000000)
+    }
+    window.onunload = function() {
+        alert('leave')
+        return true;
     }
     document.getElementById('up').onclick = function() {
         /*
@@ -385,18 +397,16 @@
                 id: id
             })
         })
-        console.log('flip')
+        console.log(flip)
     }
 
     function getname() {
-        username = document.getElementsByClassName('username no-select')[0]
+        username = window.prompt('Enter your name:')
         console.log(username)
-        if (username == undefined) {
-            alert('You must sign in to play. To play without signing in, go to upvsdown.cf')
-            document.getElementById('header-login').click()
-            return true
+        if (username == null || username == '') {
+            getname()
         }
-        username = username.innerHTML.split('\n')[1]
+        return username
     }
     setInterval(function() {
         fetch(url + 'number', {
@@ -471,8 +481,8 @@
         }
 
     }
-    let upwins = 0
-    let downwins = 0
+    upwins = 0
+    downwins = 0
 
     function clear_onclick() {
         /*
@@ -487,6 +497,9 @@
     }
     document.getElementById('instruction-container').style = ''
     document.getElementById('instruction-container').onclick = function() {
-        document.getElementById('how-to').style.width = '100%';
-    }
+            document.getElementById('how-to').style.width = '100%';
+        }
+        //TODO:
+        //Chat
+        //Help
 })();
