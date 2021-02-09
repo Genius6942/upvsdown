@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         UpVSDown
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      1.0
 // @description  try to take over the world!
 // @author       Adventure10
 // @match        https://artofproblemsolving.com/upvsdown
